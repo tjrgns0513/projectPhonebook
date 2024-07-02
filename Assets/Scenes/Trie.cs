@@ -26,20 +26,6 @@ public class Trie : MonoBehaviour
         node.Numbers.Add(number);
     }
 
-    //전화번호 수집
-    private void CollectAllNumbers(TrieNode node, List<string> results)
-    {
-        if (node.Numbers.Count > 0)
-        {
-            results.AddRange(node.Numbers);
-        }
-
-        foreach (var child in node.Children.Values)
-        {
-            CollectAllNumbers(child, results);
-        }
-    }
-
     //부분 문자열 검색
     public List<string> SearchPartial(string part)
     {
@@ -51,19 +37,17 @@ public class Trie : MonoBehaviour
     //부분 문자열 재귀적으로 검색
     private void SearchPartialRecursive(TrieNode node, string part, int index, string current, List<string> results)
     {
-        if (index == part.Length)
+        foreach (var number in node.Numbers)
         {
-            CollectAllNumbers(node, results);
-            return;
+            if (number.Contains(part))
+            {
+                results.Add(number);
+            }
         }
 
         foreach (var child in node.Children)
         {
-            if (child.Key == part[index])
-            {
-                //현재 문자와 일치하는 경우 다음으로 이동
-                SearchPartialRecursive(child.Value, part, index + 1, current + child.Key, results);
-            }
+            SearchPartialRecursive(child.Value, part, index, current + child.Key, results);
         }
     }
 }
