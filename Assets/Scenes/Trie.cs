@@ -64,11 +64,6 @@ public class Trie : MonoBehaviour
                 //현재 문자와 일치하는 경우 다음으로 이동
                 SearchPartialRecursive(child.Value, part, index + 1, current + child.Key, results);
             }
-            else
-            {
-                //일치하지 않는 경우 현재 문자 유지하고 계속 탐색
-                SearchPartialRecursive(child.Value, part, index, current + child.Key, results);
-            }
         }
     }
 }
