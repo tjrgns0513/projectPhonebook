@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using UnityEngine;
 
-public class Trie : MonoBehaviour
+public class Trie
 {
     private TrieNode root;
 
@@ -15,39 +16,62 @@ public class Trie : MonoBehaviour
     public void Insert(string number)
     {
         var node = root;
+
         foreach (var digit in number)
         {
             if (!node.Children.ContainsKey(digit))
             {
                 node.Children[digit] = new TrieNode();
             }
+
             node = node.Children[digit];
         }
-        node.Numbers.Add(number);
-    }
 
-    //부분 문자열 검색
-    public List<string> SearchPartial(string part)
-    {
-        List<string> results = new List<string>();
-        SearchPartialRecursive(root, part, "", results);
-        return results;
-    }
+        node.IsEndOfNumber = true;
 
-    //부분 문자열 재귀적으로 검색
-    private void SearchPartialRecursive(TrieNode node, string part, string current, List<string> results)
-    {
-        foreach (var number in node.Numbers)
+        if (node.Numbers == null)
         {
-            if (number.Contains(part))
+            node.Numbers = new List<PhoneNumber>();
+        }
+
+        node.Numbers.Add(new PhoneNumber(number));
+    }
+
+    public List<PhoneNumber> Search(string number)
+    {
+        var result = new List<PhoneNumber>();
+
+        var node = root;
+
+        foreach (var digit in number)
+        {
+            if(!node.Children.ContainsKey(digit))
             {
-                results.Add(number);
+                return result;
             }
+
+            node = node.Children[digit];
         }
 
-        foreach (var child in node.Children)
+        result = CollectPhoneNum(node);
+
+        return result;
+    }
+
+    private List<PhoneNumber> CollectPhoneNum(TrieNode node)
+    {
+        var result = new List<PhoneNumber>();
+
+        if (node.IsEndOfNumber) 
         {
-            SearchPartialRecursive(child.Value, part, current + child.Key, results);
+            result.AddRange(node.Numbers);
         }
+
+        foreach (var child in node.Children) 
+        {
+            result.AddRange(CollectPhoneNum(child.Value));
+        }
+
+        return result;
     }
 }

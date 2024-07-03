@@ -24,10 +24,12 @@ public class Phonebook : MonoBehaviour
         // InputField의 값이 변경될 때마다 OnValueChanged 함수를 호출
         inputField.onValueChanged.AddListener(OnValueChanged);
     }
-
     void OnValueChanged(string input)
     {
-        var results = trie.SearchPartial(input);
+        var results = trie.Search(input);
+
+        Debug.Log(results);
+
         if (results.Count > 0)
         {
             resultText.text = $"검색 결과: {string.Join(", ", results)}";
