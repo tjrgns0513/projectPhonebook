@@ -30,12 +30,12 @@ public class Trie : MonoBehaviour
     public List<string> SearchPartial(string part)
     {
         List<string> results = new List<string>();
-        SearchPartialRecursive(root, part, 0, "", results);
+        SearchPartialRecursive(root, part, "", results);
         return results;
     }
 
     //부분 문자열 재귀적으로 검색
-    private void SearchPartialRecursive(TrieNode node, string part, int index, string current, List<string> results)
+    private void SearchPartialRecursive(TrieNode node, string part, string current, List<string> results)
     {
         foreach (var number in node.Numbers)
         {
@@ -47,7 +47,7 @@ public class Trie : MonoBehaviour
 
         foreach (var child in node.Children)
         {
-            SearchPartialRecursive(child.Value, part, index, current + child.Key, results);
+            SearchPartialRecursive(child.Value, part, current + child.Key, results);
         }
     }
 }
