@@ -1,77 +1,42 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class Trie
 {
-    private TrieNode root;
+    private TrieNode root = new TrieNode();
 
-    public Trie()
+    public void Insert(string phoneNumber)
     {
-        root = new TrieNode();
+        for (int i = 0; i < phoneNumber.Length; i++)
+        {
+            var node = root;
+            for (int j = i; j < phoneNumber.Length; j++)
+            {
+                char ch = phoneNumber[j];
+                if (!node.Children.ContainsKey(ch))
+                {
+                    node.Children[ch] = new TrieNode();
+                }
+                node = node.Children[ch];
+                node.PhoneNumbers.Add(phoneNumber);
+            }
+        }
     }
 
-    //전화번호 삽입
-    public void Insert(string number)
+    public List<string> Search(string phoneNumber)
     {
         var node = root;
-
-        foreach (var digit in number)
+        foreach (var ch in phoneNumber)
         {
-            if (!node.Children.ContainsKey(digit))
+            if (!node.Children.ContainsKey(ch))
             {
-                node.Children[digit] = new TrieNode();
+                return new List<string>();
             }
-
-            node = node.Children[digit];
+            node = node.Children[ch];
         }
-
-        node.IsEndOfNumber = true;
-
-        if (node.Numbers == null)
-        {
-            node.Numbers = new List<PhoneNumber>();
-        }
-
-        node.Numbers.Add(new PhoneNumber(number));
-    }
-
-    public List<PhoneNumber> Search(string number)
-    {
-        var result = new List<PhoneNumber>();
-
-        var node = root;
-
-        foreach (var digit in number)
-        {
-            if(!node.Children.ContainsKey(digit))
-            {
-                return result;
-            }
-
-            node = node.Children[digit];
-        }
-
-        result = CollectPhoneNum(node);
-
-        return result;
-    }
-
-    private List<PhoneNumber> CollectPhoneNum(TrieNode node)
-    {
-        var result = new List<PhoneNumber>();
-
-        if (node.IsEndOfNumber) 
-        {
-            result.AddRange(node.Numbers);
-        }
-
-        foreach (var child in node.Children) 
-        {
-            result.AddRange(CollectPhoneNum(child.Value));
-        }
-
-        return result;
+        return node.PhoneNumbers;
     }
 }

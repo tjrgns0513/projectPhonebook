@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,36 +8,34 @@ public class Phonebook : MonoBehaviour
 {
     public InputField inputField;
     public Text resultText;
-
+    public Button searchButton;
     private Trie trie;
 
     void Start()
     {
         trie = new Trie();
 
-        // 전화번호부에 번호 삽입
-        string[] phoneNumbers = { "010-1234-1234", "010-1234-5678", "010-5678-5678", "010-5678-1234" }; // 중복된 번호 포함
-        foreach (var number in phoneNumbers)
-        {
-            trie.Insert(number);
-        }
+        trie.Insert("01012345678");
+        trie.Insert("01012341234");
+        trie.Insert("01087654321");
+        trie.Insert("01122334455");
 
-        // InputField의 값이 변경될 때마다 OnValueChanged 함수를 호출
-        inputField.onValueChanged.AddListener(OnValueChanged);
+        searchButton.onClick.AddListener(OnSearchButton);
+
     }
-    void OnValueChanged(string input)
+    void OnSearchButton()
     {
-        var results = trie.Search(input);
+        string phoneNumber = inputField.text;
+        var results = SearchPhoneNumber(phoneNumber);
 
-        Debug.Log(results);
-
-        if (results.Count > 0)
-        {
-            resultText.text = $"검색 결과: {string.Join(", ", results)}";
-        }
-        else
-        {
-            resultText.text = $"전화번호 {input}은(는) 전화번호부에 없습니다.";
-        }
+        // 결과 출력
+        resultText.text = "검색 결과:\n" + string.Join("\n", results);
     }
+
+    public List<string> SearchPhoneNumber(string phoneNumber)
+    {
+        return trie.Search(phoneNumber).Distinct().ToList();
+    }
+
+
 }

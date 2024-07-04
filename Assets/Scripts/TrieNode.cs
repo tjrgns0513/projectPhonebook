@@ -4,14 +4,6 @@ using UnityEngine;
 
 public class TrieNode
 {
-    public Dictionary<char, TrieNode> Children { get; private set; }
-    public List<PhoneNumber> Numbers { get; set; }
-    public bool IsEndOfNumber { get;  set; }
-
-    public TrieNode()
-    {
-        Children = new Dictionary<char, TrieNode>();
-        Numbers = new List<PhoneNumber>();
-        IsEndOfNumber = false;
-    }
+    public Dictionary<char, TrieNode> Children { get; } = new Dictionary<char, TrieNode>();
+    public List<string> PhoneNumbers { get; } = new List<string>();
 }
