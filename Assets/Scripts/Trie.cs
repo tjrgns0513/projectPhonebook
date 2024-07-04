@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using static UnityEditor.Timeline.TimelinePlaybackControls;
 
 public class Trie
 {
@@ -21,14 +23,21 @@ public class Trie
                     node.Children[ch] = new TrieNode();
                 }
                 node = node.Children[ch];
-                node.PhoneNumbers.Add(phoneNumber);
+                
             }
+            node.IsEndWord = true;
+
+            node.PhoneNumbers.Add(phoneNumber);
         }
+
+        
     }
 
     public List<string> Search(string phoneNumber)
     {
+        var result = new List<string>();
         var node = root;
+
         foreach (var ch in phoneNumber)
         {
             if (!node.Children.ContainsKey(ch))
@@ -37,6 +46,26 @@ public class Trie
             }
             node = node.Children[ch];
         }
-        return node.PhoneNumbers;
+
+        result = CollectPhoneNumbers(node);
+
+        return result;
+    }
+
+    private List<string> CollectPhoneNumbers(TrieNode node)
+    {
+        var result = new List<string>();
+
+        if (node.IsEndWord)
+        {
+            result.AddRange(node.PhoneNumbers);
+        }
+
+        foreach (var ch in node.Children)
+        {
+            result.AddRange(CollectPhoneNumbers(ch.Value));
+        }
+
+        return result;
     }
 }
