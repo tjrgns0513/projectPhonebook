@@ -6,5 +6,5 @@ public class TrieNode
 {
     public Dictionary<char, TrieNode> Children { get; } = new Dictionary<char, TrieNode>();
     public List<string> PhoneNumbers { get; } = new List<string>();
-    public bool IsEndWord { get; set; } = false;
+    public bool IsLeafNode => PhoneNumbers.Count > 0;
 }

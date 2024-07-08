@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -25,47 +26,33 @@ public class Trie
                 node = node.Children[ch];
                 
             }
-            node.IsEndWord = true;
-
             node.PhoneNumbers.Add(phoneNumber);
         }
-
-        
     }
 
     public List<string> Search(string phoneNumber)
     {
-        var result = new List<string>();
-        var node = root;
-
+        var currentNode = root;
         foreach (var ch in phoneNumber)
         {
-            if (!node.Children.ContainsKey(ch))
+            if (!currentNode.Children.ContainsKey(ch))
             {
                 return new List<string>();
             }
-            node = node.Children[ch];
+            currentNode = currentNode.Children[ch];
         }
 
-        result = CollectPhoneNumbers(node);
-
-        return result;
+        var result = new HashSet<string>();
+        CollectPhoneNumbers(currentNode, result);
+        return result.ToList();
     }
 
-    private List<string> CollectPhoneNumbers(TrieNode node)
+    private static void CollectPhoneNumbers(TrieNode node, HashSet<string> result)
     {
-        var result = new List<string>();
-
-        if (node.IsEndWord)
+        result.AddRange(node.PhoneNumbers);
+        foreach (var child in node.Children.Values)
         {
-            result.AddRange(node.PhoneNumbers);
+            CollectPhoneNumbers(child, result);
         }
-
-        foreach (var ch in node.Children)
-        {
-            result.AddRange(CollectPhoneNumbers(ch.Value));
-        }
-
-        return result;
     }
 }
